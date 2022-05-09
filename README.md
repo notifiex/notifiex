@@ -1,5 +1,10 @@
 <img src = "static/notifiex.png">
 
+[ci]: https://github.com/burntcarrot/notifiex/actions/workflows/elixir.yml
+[ci-badge]: https://github.com/burntcarrot/notifiex/actions/workflows/elixir.yml/badge.svg
+
+[![Actions status][ci-badge]][ci]
+
 <h4>Table of Contents:</h4>
 
 - [Installation](#installation)

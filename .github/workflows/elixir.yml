@@ -1,10 +1,10 @@
-name: Elixir CI
+name: CI
 
 on: [push, pull_request]
 
 jobs:
-  elixir_ci:
-    name: Elixir CI
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     env:
       MIX_ENV: test
