@@ -33,7 +33,8 @@ defmodule Notifiex.Notification do
     sender = get_sender(send_type)
 
     case notification do
-      {provider, payload, options} when is_atom(provider) and is_map(payload) and is_map(options) ->
+      {provider, payload, options}
+      when is_atom(provider) and is_map(payload) and is_map(options) ->
         sender.(provider, payload, options)
 
       [_] ->

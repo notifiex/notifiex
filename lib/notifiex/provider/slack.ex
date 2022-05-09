@@ -23,7 +23,6 @@ defmodule Notifiex.Provider.Slack do
     send_slack_notification(payload, url, token)
   end
 
-
   @spec send_slack_notification(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
   defp send_slack_notification(_payload, nil, nil), do: {:error, {:missing_options, nil}}
 
@@ -50,6 +49,6 @@ defmodule Notifiex.Provider.Slack do
 
       _ = e ->
         {:error, {:unknown_response, e}}
-      end
+    end
   end
 end
