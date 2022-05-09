@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    env:
+      MIX_ENV: test
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install Erlang/OTP + Elixir
+      id: setup-beam
+      uses: erlef/setup-beam@v1
+      with:
+        otp-version: '24.0' # version range or exact (required)
+        elixir-version: '1.12.0' # version range or exact (required)
+        # install-hex: true (default)
+        # install-rebar: true (default)
+      # outputs: ${steps.setup-beam.outputs.(opt, elixir, rebar3)-version} (exact version installed)
+
+    - name: Restore dependency/build cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          deps
+          _build
+        # cache key is hierarchical: OS, otp-version, elixir-version, mix.lock
+        key: ${{ runner.os }}-mix-${{ steps.setup-beam.outputs.otp-version }}-${{ steps.setup-beam.outputs.elixir-version }}-${{ hashFiles('**/mix.lock') }}
+        # restore keys are tried on cache misses, and only match the key prefix
+        restore-keys: |
+          ${{ runner.os }}-mix-${{ steps.setup-beam.outputs.otp-version }}-${{ steps.setup-beam.outputs.elixir-version }}-
+          ${{ runner.os }}-mix-${{ steps.setup-beam.outputs.otp-version }}-
+          ${{ runner.os }}-mix-
+
+    - name: Dependencies
+      run: |
+        mix deps.get
+        mix deps.compile
+
+    - name: Compile
+      run: |
+        mix compile --warnings-as-errors
+
+    - name: Test + Coverage
+      run: |
+        mix test --warnings-as-errors --cover
+
+    - name: Publish
+      run: |
+        mix hex.publish --yes
+      env:
+        HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
