@@ -48,7 +48,8 @@ defmodule Notifiex do
   @spec providers() :: keyword
   def providers do
     providers = [
-      slack: Notifiex.Provider.Slack
+      slack: Notifiex.Provider.Slack,
+      mock: Notifiex.Provider.Mock
     ]
 
     # return keyword list
