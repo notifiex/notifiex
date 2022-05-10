@@ -10,7 +10,7 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     env:
-      MIX_ENV: test
+      MIX_ENV: dev
 
     steps:
     - name: Checkout repository
@@ -53,8 +53,14 @@ jobs:
       run: |
         mix test --warnings-as-errors --cover
 
+    - name: Generate documentation
+      run: mix docs
+      env:
+        MIX_ENV: dev
+
     - name: Publish
       run: |
         mix hex.publish --yes
       env:
+        MIX_ENV: dev
         HEX_API_KEY: ${{ secrets.HEX_API_KEY }}
