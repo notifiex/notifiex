@@ -1,0 +1,52 @@
+I"�	<h2 id="a-dead-simple-elixir-library-for-sending-notifications-to-various-messaging-services">A dead simple Elixir library for sending notifications to various messaging services.</h2>
+
+<h3 id="how-does-it-work">How does it work?</h3>
+
+<p>Notifiex can be added to any Elixir application, which allows the app to send notifications to services like Slack, Discord, etc. No need to implement and craft complex solutions, Notifiex makes use of official APIs, instead of third-party client libraries for interacting with services.</p>
+
+<p>Once installed, sending a message/notification is super easy:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; Notifiex.send(:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"})
+</code></pre></div></div>
+
+<p>Here is an overview:</p>
+
+<p><img src="images/notifiex.svg" alt="Notifiex architecture." /></p>
+
+<p><sup><a href="https://excalidraw.com/#json=YREJy48srbJ98Nj396_9Q,onUA7l8dKg7IBAV6fM_eMw">Excalidraw Link</a></sup></p>
+
+<h3 id="im-satisfied-show-me-how-to-install-it">I’m satisfied. Show me how to install it.</h3>
+
+<p>Check out the <a href="https://github.com/burntcarrot/notifiex">Github repository</a> for more details.</p>
+
+<h3 id="which-services-does-notifiex-support">Which services does Notifiex support?</h3>
+
+<p>Supported:</p>
+
+<ul class="fa-ul">
+  <li><i class="fa-li fa fa-check-square-o"></i>Slack</li>
+  <li><i class="fa-li fa fa-check-square-o"></i>Discord</li>
+</ul>
+
+<p>Planned for future releases:</p>
+
+<ul class="fa-ul">
+  <li><i class="fa-li fa fa-spinner fa-spin"></i>Linear</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Mattermost</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Mailgun</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Microsoft Teams</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Plivo</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>SendGrid</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Twitter</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Telegram</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Zulip</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Rocket.Chat</li>
+  <li><i class="fa-li fa fa-spinner fa-spin "></i>Google Chat</li>
+</ul>
+
+<hr />
+
+<h5 id="disclaimer">Disclaimer:</h5>
+
+<p>Notifiex doesn’t guarantee message delivery. Message retries are not supported for now. Please use with caution.</p>
+:ET
