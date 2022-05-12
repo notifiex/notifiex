@@ -2,9 +2,9 @@
 title: Notifiex
 tag_text: Notifiex
 description: Notifiex docs.
-url: "https://burntcarrot.github.io/notifiex/"
+url: ""
 baseurl: ""
-
+remote_theme: pmarsceill/just-the-docs
 font-awesome-include: true # make this false if you don't need font-awesome
 
 # Build settings
