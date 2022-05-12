@@ -23,7 +23,7 @@ defmodule Notifiex.Notification do
   `send_notification` sends the notification with the help of the `notification` tuple.
 
   `notification` should have the following:
-  * Provider: Slack, etc.
+  * Service: Slack, etc.
   * Payload
   * Options
   """
@@ -33,9 +33,9 @@ defmodule Notifiex.Notification do
     sender = get_sender(send_type)
 
     case notification do
-      {provider, payload, options}
-      when is_atom(provider) and is_map(payload) and is_map(options) ->
-        sender.(provider, payload, options)
+      {service, payload, options}
+      when is_atom(service) and is_map(payload) and is_map(options) ->
+        sender.(service, payload, options)
 
       [_] ->
         {:error, {:missing, :payload}}

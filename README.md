@@ -3,31 +3,28 @@
 [ci]: https://github.com/burntcarrot/notifiex/actions/workflows/elixir.yml
 [ci-badge]: https://github.com/burntcarrot/notifiex/actions/workflows/elixir.yml/badge.svg
 
+[![Hex](https://img.shields.io/hexpm/v/notifiex.svg)](https://hex.pm/packages/notifiex)
 [![Actions status][ci-badge]][ci]
 
 <h4>Table of Contents:</h4>
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [Providers](#providers)
+- [Services](#services)
 - [License](#license)
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
+[Notifiex](https://hex.pm/packages/notifiex) can be installed
 by adding `notifiex` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:notifiex, "~> 0.1.0"}
+    {:notifiex, "~> 1.1.0"}
   ]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/notifiex](https://hexdocs.pm/notifiex).
 
 ## Usage
 
@@ -37,12 +34,31 @@ Here is an example on how Notifiex sends a Slack message:
 > Notifiex.send(:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"})
 ```
 
-## Providers
+Sending a Discord message:
 
-Notifiex currently supports these providers:
+```elixir
+> Notifiex.send(:discord, %{content: "Notifiex is cool! 🚀"},  %{webhook: "SECRET"})
+```
+
+## Services
+
+Notifiex currently supports these services:
 
 - [x] Slack
-- [ ] Discord
+- [x] Discord
+
+Planned services:
+- [ ] Linear
+- [ ] Mailgun
+- [ ] Microsoft Teams
+- [ ] SendGrid
+- [ ] Plivo
+- [ ] Telegram
+- [ ] Twitter
+- [ ] Zulip
+- [ ] Rocket.Chat
+- [ ] Google Chat
+- [ ] Mattermost
 
 ## License
 

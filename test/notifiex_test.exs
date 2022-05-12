@@ -1,11 +1,11 @@
 defmodule NotifiexTest do
   use ExUnit.Case
 
-  test "must not work with unknown provider" do
+  test "must not work with unknown service" do
     # hope we support printers one day ;)
     result = Notifiex.send(:printer, %{}, %{})
 
-    assert result == {:error, {:unknown_provider, :printer}}
+    assert result == {:error, {:unknown_service, :printer}}
   end
 
   test "must work with payload" do

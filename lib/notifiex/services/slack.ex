@@ -1,32 +1,32 @@
-defmodule Notifiex.Provider.Slack do
+defmodule Notifiex.Service.Slack do
   @moduledoc """
-  Slack provider for Notifiex.
+  Slack service for Notifiex.
   """
 
-  @behaviour Notifiex.ProviderBehavior
+  @behaviour Notifiex.ServiceBehavior
 
   @doc """
   Sends a message to the specified channel.
 
   `payload` should include the following:
-  * `text`: The message text.
-  * `channel`: The channel to send the message to.
+  * `text`: The message text. (required)
+  * `channel`: The channel to send the message to. (required)
 
   `options` should include the following:
-  * `token`: Authentication token.
+  * `token`: Authentication token. (required)
   """
   @spec call(map, map) :: {:ok, binary} | {:error, {atom, any}}
   def call(payload, options) when is_map(payload) and is_map(options) do
     url = "https://slack.com/api/chat.postMessage"
     token = Map.get(options, :token)
 
-    send_slack_notification(payload, url, token)
+    send_slack(payload, url, token)
   end
 
-  @spec send_slack_notification(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
-  defp send_slack_notification(_payload, nil, nil), do: {:error, {:missing_options, nil}}
+  @spec send_slack(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
+  defp send_slack(_payload, nil, nil), do: {:error, {:missing_options, nil}}
 
-  defp send_slack_notification(payload, url, token) do
+  defp send_slack(payload, url, token) do
     json_payload = Poison.encode!(payload)
 
     header = [

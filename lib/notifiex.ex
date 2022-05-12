@@ -8,19 +8,19 @@ defmodule Notifiex do
   # type definitions
 
   @type id :: atom
-  @type provider :: atom
+  @type service :: atom
   @type payload :: atom
   @type options :: atom
   @type result :: atom
   @type send_type :: :sync
-  @type config :: {provider, payload, options}
+  @type config :: {service, payload, options}
 
   def start(_start_type, _start_args) do
     Task.Supervisor.start_link(name: Notifiex.Supervisor, max_restarts: 2)
   end
 
   @doc """
-  `send` helps in sending a notification through the specified provider.
+  `send` helps in sending a notification through the specified service.
 
   Example:
 
@@ -28,32 +28,33 @@ defmodule Notifiex do
   > Notifiex.send(:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"})
   ```
   """
-  @spec send(provider, payload, options) :: result
-  def send(provider, payload, options) do
-    # fetch provider
-    handler = Keyword.get(providers(), provider)
+  @spec send(service, payload, options) :: result
+  def send(service, payload, options) do
+    # fetch service
+    handler = Keyword.get(services(), service)
 
-    # if no provider is found, return an error
+    # if no service is found, return an error
     if is_nil(handler) do
-      {:error, {:unknown_provider, provider}}
+      {:error, {:unknown_service, service}}
     else
-      # call provider with the payload and options
+      # call service with the payload and options
       handler.call(payload, options)
     end
   end
 
   @doc """
-  Returns a Keyword list of providers.
+  Returns a Keyword list of services.
   """
-  @spec providers() :: keyword
-  def providers do
-    providers = [
-      slack: Notifiex.Provider.Slack,
-      mock: Notifiex.Provider.Mock
+  @spec services() :: keyword
+  def services do
+    services = [
+      slack: Notifiex.Service.Slack,
+      discord: Notifiex.Service.Discord,
+      mock: Notifiex.Service.Mock
     ]
 
     # return keyword list
-    providers
-    |> Keyword.merge(Application.get_env(:notifiex, :providers, []))
+    services
+    |> Keyword.merge(Application.get_env(:notifiex, :services, []))
   end
 end

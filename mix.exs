@@ -4,7 +4,7 @@ defmodule Notifiex.MixProject do
   def project() do
     [
       app: :notifiex,
-      version: "1.0.0",
+      version: "1.1.0",
       elixir: "~> 1.12",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
@@ -40,7 +40,7 @@ defmodule Notifiex.MixProject do
   end
 
   defp description() do
-    "Notifiex helps in sending out notifications to multiple providers including Slack, etc."
+    "A dead simple Elixir library for sending notifications to various messaging services."
   end
 
   defp package() do
