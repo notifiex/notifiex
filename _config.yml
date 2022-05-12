@@ -2,7 +2,7 @@
 title: Notifiex
 tag_text: Notifiex
 description: Notifiex docs.
-url: "http://burntcarrot.github.io/notifiex"
+url: "https://burntcarrot.github.io/notifiex/"
 baseurl: ""
 
 font-awesome-include: true # make this false if you don't need font-awesome
