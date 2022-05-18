@@ -7,7 +7,7 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     env:
-      MIX_ENV: test
+      MIX_ENV: dev
 
     steps:
     - name: Checkout repository
@@ -41,6 +41,11 @@ jobs:
       run: |
         mix deps.get
         mix deps.compile
+
+    - name: Run credo
+      run: mix credo
+      env:
+        MIX_ENV: dev
 
     - name: Compile
       run: |

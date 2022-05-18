@@ -20,13 +20,25 @@ defmodule Notifiex.Service.Slack do
     url = "https://slack.com/api/chat.postMessage"
     token = Map.get(options, :token)
 
-    send_slack(payload, url, token)
+    # send message (without file)
+    send_message(payload, url, token)
+
+    # fetch channels and files
+    channels = Map.get(options, :channel_ids)
+    files = Map.get(options, :files)
+
+    # Send each file through the files.upload API
+    for file <- files do
+      if String.trim(file) != "" do
+        send_files(file, channels, token)
+      end
+    end
   end
 
-  @spec send_slack(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
-  defp send_slack(_payload, nil, nil), do: {:error, {:missing_options, nil}}
+  @spec send_message(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
+  defp send_message(_payload, nil, nil), do: {:error, {:missing_options, nil}}
 
-  defp send_slack(payload, url, token) do
+  defp send_message(payload, url, token) do
     json_payload = Poison.encode!(payload)
 
     header = [
@@ -38,6 +50,46 @@ defmodule Notifiex.Service.Slack do
     HTTPoison.start()
 
     case HTTPoison.post(url, json_payload, header) do
+      {:ok, %HTTPoison.Response{body: response, status_code: 200}} ->
+        {:ok, response}
+
+      {:ok, %HTTPoison.Response{body: response}} ->
+        {:error, {:error_response, response}}
+
+      {:error, %HTTPoison.Error{reason: reason}} ->
+        {:error, {:error, reason}}
+
+      _ = e ->
+        {:error, {:unknown_response, e}}
+    end
+  end
+
+  @spec send_files(binary, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
+  defp send_files(files, nil, nil), do: {:error, {:missing_options, nil}}
+
+  defp send_files(files, channels, token) do
+    header = [
+      {"Authorization", "Bearer " <> token}
+    ]
+
+    HTTPoison.start()
+
+    # create a multipart request with files and channel IDs
+    request = %HTTPoison.Request{
+      method: :post,
+      url: "https://slack.com/api/files.upload",
+      headers: header,
+      body:
+        {:multipart,
+         [
+           {:file, files},
+           {"channels", channels}
+         ]}
+    }
+
+    response = HTTPoison.request(request)
+
+    case response do
       {:ok, %HTTPoison.Response{body: response, status_code: 200}} ->
         {:ok, response}
 

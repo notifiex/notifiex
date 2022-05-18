@@ -9,9 +9,9 @@ defmodule Notifiex do
 
   @type id :: atom
   @type service :: atom
-  @type payload :: atom
-  @type options :: atom
-  @type result :: atom
+  @type payload :: map
+  @type options :: map
+  @type result :: {:ok, any} | {:error, {atom, any}}
   @type send_type :: :sync
   @type config :: {service, payload, options}
 
