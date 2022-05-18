@@ -12,7 +12,7 @@ defmodule Notifiex do
   @type payload :: map
   @type options :: map
   @type result :: {:ok, any} | {:error, {atom, any}}
-  @type send_type :: :sync
+  @type send_type :: :sync | :async
   @type config :: {service, payload, options}
 
   def start(_start_type, _start_args) do
@@ -39,6 +39,30 @@ defmodule Notifiex do
     else
       # call service with the payload and options
       handler.call(payload, options)
+    end
+  end
+
+  @doc """
+  `send_async` helps in sending notifications in an asynchronous way.
+
+  Example:
+
+  ```
+  > Notifiex.send_async(:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"})
+  ```
+  """
+  @spec send_async(service, payload, options) :: result
+  def send_async(service, payload, options) do
+    # fetch service
+    handler = Keyword.get(services(), service)
+
+    # if no service is found, return an error
+    if is_nil(handler) do
+      {:error, {:unknown_service, service}}
+    else
+      # call service with the payload and options using supervisor
+      task = Task.Supervisor.async(Notifiex.Supervisor, fn -> handler.call(payload, options) end)
+      {:ok, task}
     end
   end
 

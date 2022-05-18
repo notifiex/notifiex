@@ -65,7 +65,7 @@ defmodule Notifiex.Service.Slack do
   end
 
   @spec send_files(binary, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
-  defp send_files(files, nil, nil), do: {:error, {:missing_options, nil}}
+  defp send_files(_files, nil, nil), do: {:error, {:missing_options, nil}}
 
   defp send_files(files, channels, token) do
     header = [

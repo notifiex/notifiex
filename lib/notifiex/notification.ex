@@ -16,6 +16,14 @@ defmodule Notifiex.Notification do
       def send(opts) do
         Notification.send_notification(opts, :sync)
       end
+
+      @doc """
+      `send_async` sends the notification in an asynchronous way.
+      """
+      @spec send_async(any) :: [{Notifiex.id(), Notifiex.result()}]
+      def send_async(opts) do
+        Notification.send_notification(opts, :async)
+      end
     end
   end
 
@@ -47,4 +55,5 @@ defmodule Notifiex.Notification do
 
   # sender mappings
   defp get_sender(:sync), do: &Notifiex.send/3
+  defp get_sender(:async), do: &Notifiex.send_async/3
 end
