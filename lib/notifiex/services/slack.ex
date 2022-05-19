@@ -3,7 +3,7 @@ defmodule Notifiex.Service.Slack do
   Slack service for Notifiex.
   """
 
-  @behaviour Notifiex.ServiceBehavior
+  @behaviour Notifiex.ServiceBehaviour
 
   @doc """
   Sends a message to the specified channel.
@@ -28,9 +28,11 @@ defmodule Notifiex.Service.Slack do
     files = Map.get(options, :files)
 
     # Send each file through the files.upload API
-    for file <- files do
-      if String.trim(file) != "" do
-        send_files(file, channels, token)
+    if not is_nil(files) do
+      for file <- files do
+        if String.trim(file) != "" do
+          send_files(file, channels, token)
+        end
       end
     end
   end

@@ -43,7 +43,7 @@ defmodule Notifiex do
   end
 
   @doc """
-  `send_async` helps in sending notifications in an asynchronous way.
+  `send_async` helps in sending a notification in an asynchronous way.
 
   Example:
 
@@ -64,6 +64,50 @@ defmodule Notifiex do
       task = Task.Supervisor.async(Notifiex.Supervisor, fn -> handler.call(payload, options) end)
       {:ok, task}
     end
+  end
+
+  @doc """
+  `send_multiple` helps in sending multiple notifications in a synchronous way.
+
+  Example:
+
+  ```elixir
+  notifs = [
+    slack_test: {:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"}},
+    discord_test: {:discord, %{content: "Notifiex is cool! 🚀"},  %{webhook: "SECRET"}}
+  ]
+
+  Notifiex.send_multiple(notifs)
+  ```
+  """
+  @spec send_multiple(any) :: [{Notifiex.id(), Notifiex.result()}]
+  def send_multiple(notification) do
+    notification
+    |> Enum.map(fn {i, notification} ->
+      {i, Notifiex.Notification.send_notification(notification, :sync)}
+    end)
+  end
+
+  @doc """
+  `send_async_multiple` helps in sending multiple notifications in an asynchronous way.
+
+  Example:
+
+  ```elixir
+  notifs = [
+    slack_test: {:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"}},
+    discord_test: {:discord, %{content: "Notifiex is cool! 🚀"},  %{webhook: "SECRET"}}
+  ]
+
+  Notifiex.send_async_multiple(notifs)
+  ```
+  """
+  @spec send_async_multiple(any) :: [{Notifiex.id(), Notifiex.result()}]
+  def send_async_multiple(notification) do
+    notification
+    |> Enum.map(fn {i, notification} ->
+      {i, Notifiex.Notification.send_notification(notification, :async)}
+    end)
   end
 
   @doc """

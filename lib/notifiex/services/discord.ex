@@ -3,7 +3,7 @@ defmodule Notifiex.Service.Discord do
   Discord service for Notifiex.
   """
 
-  @behaviour Notifiex.ServiceBehavior
+  @behaviour Notifiex.ServiceBehaviour
 
   @doc """
   Sends a message through Webhooks.

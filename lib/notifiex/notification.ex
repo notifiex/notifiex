@@ -3,30 +3,6 @@ defmodule Notifiex.Notification do
   Module for notifications.
   """
 
-  defmacro __using__(_) do
-    quote do
-      @behavior Notifiex.NotificationBehavior
-
-      alias Notifiex.Notification
-
-      @doc """
-      `send` sends the notification in a synchronous way.
-      """
-      @spec send(any) :: [{Notifiex.id(), Notifiex.result()}]
-      def send(opts) do
-        Notification.send_notification(opts, :sync)
-      end
-
-      @doc """
-      `send_async` sends the notification in an asynchronous way.
-      """
-      @spec send_async(any) :: [{Notifiex.id(), Notifiex.result()}]
-      def send_async(opts) do
-        Notification.send_notification(opts, :async)
-      end
-    end
-  end
-
   @doc """
   `send_notification` sends the notification with the help of the `notification` tuple.
 

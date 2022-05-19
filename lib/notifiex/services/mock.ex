@@ -3,7 +3,7 @@ defmodule Notifiex.Service.Mock do
   Mock service for Notifiex.
   """
 
-  @behaviour Notifiex.ServiceBehavior
+  @behaviour Notifiex.ServiceBehaviour
 
   @doc """
   Mock service returns `{:ok, true}` if payload is `{hello: "world"}`, else returns an error response: `{:error, :mock_error, false}`.

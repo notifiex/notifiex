@@ -1,4 +1,4 @@
-defmodule Notifiex.ServiceBehavior do
+defmodule Notifiex.ServiceBehaviour do
   @moduledoc """
   Interface for Notifiex services.
   """
