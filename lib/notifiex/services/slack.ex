@@ -28,13 +28,10 @@ defmodule Notifiex.Service.Slack do
     files = Map.get(options, :files)
 
     # Send each file through the files.upload API
-    if not is_nil(files) do
-      for file <- files do
-        if String.trim(file) != "" do
-          send_files(file, channels, token)
-        end
-      end
-    end
+    files
+    |> Enum.filter(fn file -> String.trim(file) != "" end)
+    |> Enum.map(fn file -> send_files(file, channels, token) end)
+    |> List.last()
   end
 
   @spec send_message(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
