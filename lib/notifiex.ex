@@ -9,8 +9,8 @@ defmodule Notifiex do
 
   @type id :: atom
   @type service :: atom
-  @type payload :: map
-  @type options :: map
+  @type payload :: Notifiex.Service.Slack.payload() | Notifiex.Service.Discord.payload()
+  @type options :: Notifiex.Service.Slack.options() | Notifiex.Service.Discord.options()
   @type result :: {:ok, any} | {:error, {atom, any}}
   @type send_type :: :sync | :async
   @type config :: {service, payload, options}

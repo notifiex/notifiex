@@ -5,6 +5,14 @@ defmodule Notifiex.Service.Discord do
 
   @behaviour Notifiex.ServiceBehaviour
 
+  @type payload :: %{
+          content: any
+        }
+
+  @type options :: %{
+          webhook: any
+        }
+
   @doc """
   Sends a message through Webhooks.
 
@@ -14,7 +22,7 @@ defmodule Notifiex.Service.Discord do
   `options` should include the following:
   * `webhook`: Webhook URI. (required)
   """
-  @spec call(map, map) :: {:ok, binary} | {:error, {atom, any}}
+  @spec call(payload(), options()) :: Notifiex.result()
   def call(payload, options) when is_map(payload) and is_map(options) do
     webhook = Map.get(options, :webhook)
 

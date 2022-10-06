@@ -5,6 +5,15 @@ defmodule Notifiex.Service.Slack do
 
   @behaviour Notifiex.ServiceBehaviour
 
+  @type payload :: %{
+          text: any,
+          channel: any
+        }
+
+  @type options :: %{
+          token: any
+        }
+
   @doc """
   Sends a message to the specified channel.
 
@@ -15,7 +24,7 @@ defmodule Notifiex.Service.Slack do
   `options` should include the following:
   * `token`: Authentication token. (required)
   """
-  @spec call(map, map) :: {:ok, binary} | {:error, {atom, any}}
+  @spec call(payload(), options()) :: Notifiex.result()
   def call(payload, options) when is_map(payload) and is_map(options) do
     url = "https://slack.com/api/chat.postMessage"
     token = Map.get(options, :token)
