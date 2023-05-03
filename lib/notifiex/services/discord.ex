@@ -14,19 +14,17 @@ defmodule Notifiex.Service.Discord do
   `options` should include the following:
   * `webhook`: Webhook URI. (required)
   """
-  @spec call(map, map) :: {:ok, binary} | {:error, {atom, any}}
-  def call(payload, options) when is_map(payload) and is_map(options) do
+  @spec call(binary, map) :: {:ok, binary} | {:error, {atom, any}}
+  def call(payload, options) when is_binary(payload) and is_map(options) do
     webhook = Map.get(options, :webhook)
 
     send_discord(payload, webhook)
   end
 
-  @spec send_discord(map, binary) :: {:ok, binary} | {:error, {atom, any}}
+  @spec send_discord(binary, binary) :: {:ok, binary} | {:error, {atom, any}}
   defp send_discord(_payload, nil), do: {:error, {:missing_options, nil}}
 
   defp send_discord(payload, url) do
-    json_payload = Poison.encode!(payload)
-
     header = [
       {"Accept", "application/json"},
       {"Content-Type", "application/json; charset=utf-8"}
@@ -34,7 +32,7 @@ defmodule Notifiex.Service.Discord do
 
     HTTPoison.start()
 
-    case HTTPoison.post(url, json_payload, header) do
+    case HTTPoison.post(url, payload, header) do
       {:ok, %HTTPoison.Response{body: response, status_code: 204}} ->
         {:ok, response}
 

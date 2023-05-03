@@ -15,7 +15,7 @@ defmodule Notifiex.Service.Slack do
   `options` should include the following:
   * `token`: Authentication token. (required)
   """
-  @spec call(map, map) :: {:ok, binary} | {:error, {atom, any}}
+  @spec call(binary, map) :: {:ok, binary} | {:error, {atom, any}}
   def call(payload, options) when is_map(payload) and is_map(options) do
     url = "https://slack.com/api/chat.postMessage"
     token = Map.get(options, :token)
@@ -37,12 +37,10 @@ defmodule Notifiex.Service.Slack do
     end
   end
 
-  @spec send_message(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
+  @spec send_message(binary, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
   defp send_message(_payload, nil, nil), do: {:error, {:missing_options, nil}}
 
   defp send_message(payload, url, token) do
-    json_payload = Poison.encode!(payload)
-
     header = [
       {"Accept", "application/json"},
       {"Content-Type", "application/json; charset=utf-8"},
@@ -51,7 +49,7 @@ defmodule Notifiex.Service.Slack do
 
     HTTPoison.start()
 
-    case HTTPoison.post(url, json_payload, header) do
+    case HTTPoison.post(url, payload, header) do
       {:ok, %HTTPoison.Response{body: response, status_code: 200}} ->
         {:ok, response}
 

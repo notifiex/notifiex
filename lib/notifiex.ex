@@ -9,7 +9,7 @@ defmodule Notifiex do
 
   @type id :: atom
   @type service :: atom
-  @type payload :: map
+  @type payload :: binary
   @type options :: map
   @type result :: {:ok, any} | {:error, {atom, any}}
   @type send_type :: :sync | :async
