@@ -16,7 +16,7 @@ defmodule Notifiex.Service.Slack do
   * `token`: Authentication token. (required)
   """
   @spec call(binary, map) :: {:ok, binary} | {:error, {atom, any}}
-  def call(payload, options) when is_map(payload) and is_map(options) do
+  def call(payload, options) when is_binary(payload) and is_map(options) do
     url = "https://slack.com/api/chat.postMessage"
     token = Map.get(options, :token)
 
