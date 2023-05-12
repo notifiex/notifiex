@@ -18,7 +18,7 @@ defmodule Notifiex.Notification do
 
     case notification do
       {service, payload, options}
-      when is_atom(service) and is_map(payload) and is_map(options) ->
+      when is_atom(service) and is_binary(payload) and is_map(options) ->
         sender.(service, payload, options)
 
       [_] ->
