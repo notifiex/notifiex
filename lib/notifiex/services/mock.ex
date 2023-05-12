@@ -8,7 +8,7 @@ defmodule Notifiex.Service.Mock do
   @doc """
   Mock service returns `{:ok, true}` if payload is `{hello: "world"}`, else returns an error response: `{:error, :mock_error, false}`.
   """
-  @spec call(map, map) :: {:ok, binary} | {:error, {atom, any}}
+  @spec call(binary(), map) :: {:ok, binary} | {:error, {atom, any}}
   def call("", _), do: {:error, {:mock_error, false}}
-  def call(payload, _), do: {:ok, true}
+  def call(_payload, _), do: {:ok, true}
 end
