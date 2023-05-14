@@ -5,9 +5,6 @@ defmodule Notifiex do
 
   use Application
 
-  # type definitions
-
-  @type id :: atom
   @type service :: atom
   @type payload :: map
   @type options :: map
@@ -15,114 +12,76 @@ defmodule Notifiex do
   @type send_type :: :sync | :async
   @type config :: {service, payload, options}
 
+  @doc """
+    Sends a notification through the specified services.
+
+    ## Examples
+
+        iex> Notifiex.send([:slack, :discord], "Notifiex is cool!", %{webhook: "url", token: "SECRET"})
+        [
+          {:ok, "Message sent successfully"},
+          {:ok, "Message sent successfully"}
+        ]
+
+  """
+  @spec send([service()], payload :: any, options :: map, send_type :: (:sync | :async)) :: [result()]
+  def send(services, payload, options, send_type) do
+    sender = get_sender(send_type)
+    sender.(services, payload, options)
+  end
+
+  defp get_sender(:sync), do: &send_sync/3
+  defp get_sender(:async), do: &send_async/3
+
+  defp send_sync(services, payload, options) do
+    for service <- services do
+      case get_service_handler(service) do
+        nil -> {:error, {:unknown_service, service}}
+        handler ->
+          case handler.call(
+            Map.put(payload, :files, Map.get(payload, :files, [])),
+            Map.get(options, service, %{})
+          ) do
+            {:ok, _} -> {:ok, "Message sent successfully"}
+            error -> {:error, error}
+          end
+      end
+    end
+  end
+
+  defp send_async(services, payload, options) do
+    for service <- services do
+      case get_service_handler(service) do
+        nil ->
+          {:error, {:unknown_service, service}}
+
+        handler ->
+          task =
+            Task.Supervisor.async(Notifiex.Supervisor, fn -> handler.call(Map.put(payload, :files, Map.get(payload, :files, [])),
+            Map.get(options, service, %{})) end)
+
+          {:ok, task}
+      end
+    end
+  end
+
   def start(_start_type, _start_args) do
     Task.Supervisor.start_link(name: Notifiex.Supervisor, max_restarts: 2)
   end
 
   @doc """
-  `send` helps in sending a notification through the specified service.
-
-  Example:
-
-  ```
-  > Notifiex.send(:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"})
-  ```
+  Returns a map of services.
   """
-  @spec send(service, payload, options) :: result
-  def send(service, payload, options) do
-    # fetch service
-    handler = Keyword.get(services(), service)
-
-    # if no service is found, return an error
-    if is_nil(handler) do
-      {:error, {:unknown_service, service}}
-    else
-      # call service with the payload and options
-      handler.call(payload, options)
-    end
-  end
-
-  @doc """
-  `send_async` helps in sending a notification in an asynchronous way.
-
-  Example:
-
-  ```
-  > Notifiex.send_async(:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"})
-  ```
-  """
-  @spec send_async(service, payload, options) :: result
-  def send_async(service, payload, options) do
-    # fetch service
-    handler = Keyword.get(services(), service)
-
-    # if no service is found, return an error
-    if is_nil(handler) do
-      {:error, {:unknown_service, service}}
-    else
-      # call service with the payload and options using supervisor
-      task = Task.Supervisor.async(Notifiex.Supervisor, fn -> handler.call(payload, options) end)
-      {:ok, task}
-    end
-  end
-
-  @doc """
-  `send_multiple` helps in sending multiple notifications in a synchronous way.
-
-  Example:
-
-  ```elixir
-  notifs = [
-    slack_test: {:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"}},
-    discord_test: {:discord, %{content: "Notifiex is cool! 🚀"},  %{webhook: "SECRET"}}
-  ]
-
-  Notifiex.send_multiple(notifs)
-  ```
-  """
-  @spec send_multiple(any) :: [{Notifiex.id(), Notifiex.result()}]
-  def send_multiple(notification) do
-    notification
-    |> Enum.map(fn {i, notification} ->
-      {i, Notifiex.Notification.send_notification(notification, :sync)}
-    end)
-  end
-
-  @doc """
-  `send_async_multiple` helps in sending multiple notifications in an asynchronous way.
-
-  Example:
-
-  ```elixir
-  notifs = [
-    slack_test: {:slack, %{text: "Notifiex is cool! 🚀", channel: "general"},  %{token: "SECRET"}},
-    discord_test: {:discord, %{content: "Notifiex is cool! 🚀"},  %{webhook: "SECRET"}}
-  ]
-
-  Notifiex.send_async_multiple(notifs)
-  ```
-  """
-  @spec send_async_multiple(any) :: [{Notifiex.id(), Notifiex.result()}]
-  def send_async_multiple(notification) do
-    notification
-    |> Enum.map(fn {i, notification} ->
-      {i, Notifiex.Notification.send_notification(notification, :async)}
-    end)
-  end
-
-  @doc """
-  Returns a Keyword list of services.
-  """
-  @spec services() :: keyword
+  @spec services() :: map
   def services do
-    services = [
+    default_services = %{
       slack: Notifiex.Service.Slack,
       discord: Notifiex.Service.Discord,
       mock: Notifiex.Service.Mock
-    ]
+    }
 
-    # return keyword list
-    services
-    |> Keyword.merge(Application.get_env(:notifiex, :services, []))
+    Application.get_env(:notifiex, :services, %{}) |> Map.merge(default_services)
   end
+
+  defp get_service_handler(service), do: services()[service]
 end

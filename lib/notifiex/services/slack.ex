@@ -20,12 +20,16 @@ defmodule Notifiex.Service.Slack do
     url = "https://slack.com/api/chat.postMessage"
     token = Map.get(options, :token)
 
-    # send message (without file)
-    send_message(payload, url, token)
+    # Check if a specific channel is defined in options, update payload
+    channel = Map.get(options, :channel)
+    payload_with_channel = Map.put(payload, :channel, channel)
 
-    # fetch channels and files
+    # Send message (without file)
+    send_message(payload_with_channel, url, token)
+
+    # Fetch channels and files
     channels = Map.get(options, :channel_ids)
-    files = Map.get(options, :files)
+    files = Map.get(payload, :files)
 
     # Send each file through the files.upload API
     if not is_nil(files) do
