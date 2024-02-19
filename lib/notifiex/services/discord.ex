@@ -17,12 +17,16 @@ defmodule Notifiex.Service.Discord do
   * `webhook`: Webhook URI. (required)
   """
   @spec call(payload(), payload()) :: Notifiex.result()
-  def call(payload = %{"content" => _}, options = %{"webhook" => webhook})
-      when is_map(payload) and is_map(options) do
+  def call(payload = _, options = _)
+      when not (is_map(payload) and is_map(options) and is_map_key(payload, :content) and
+                  is_map_key(options, :webhook)),
+      do: {:error, {:missing_required_params}, nil}
+
+  def call(payload, options) do
+    webhook = Map.get(options, :webhook)
+
     send_discord(payload, webhook)
   end
-
-  def call(_, _), do: {:error, {:missing_required_params}, nil}
 
   @spec send_discord(map, binary) :: Notifiex.result()
   defp send_discord(payload, url) do

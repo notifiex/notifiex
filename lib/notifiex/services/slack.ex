@@ -24,12 +24,14 @@ defmodule Notifiex.Service.Slack do
   * `files`: List of files to be uploaded (optional)
   """
   @spec call(payload(), options()) :: Notifiex.result()
-  def call(payload, options)
+  def call(payload = _, options = _)
+      when not (is_map(payload) and is_map(options) and is_map_key(payload, :text) and
+                  is_map_key(payload, :channel) and is_map_key(options, :token)),
+      do: {:error, {:missing_required_params}, nil}
 
-  def call(payload = %{"text" => _, "channel" => _}, options = %{"token" => token})
-      when is_map(payload) and is_map(options) do
-    IO.puts("text #{Map.get(payload, :text)}")
+  def call(payload, options) do
     url = "https://slack.com/api/chat.postMessage"
+    token = Map.get(options, :token)
 
     # send message (without file)
     result = send_message(payload, url, token)
@@ -49,8 +51,6 @@ defmodule Notifiex.Service.Slack do
       end
     end
   end
-
-  def call(_, _), do: {:error, {:missing_required_params}, nil}
 
   @spec send_message(map, binary, binary) :: Notifiex.result()
   defp send_message(payload, url, token) do
