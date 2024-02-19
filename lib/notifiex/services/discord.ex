@@ -4,6 +4,8 @@ defmodule Notifiex.Service.Discord do
   """
 
   @behaviour Notifiex.ServiceBehaviour
+  @type payload :: %{required(:content) => binary}
+  @type options :: %{required(:webhook) => binary}
 
   @doc """
   Sends a message through Webhooks.
@@ -14,16 +16,15 @@ defmodule Notifiex.Service.Discord do
   `options` should include the following:
   * `webhook`: Webhook URI. (required)
   """
-  @spec call(map, map) :: {:ok, binary} | {:error, {atom, any}}
-  def call(payload, options) when is_map(payload) and is_map(options) do
-    webhook = Map.get(options, :webhook)
-
+  @spec call(payload(), payload()) :: Notifiex.result()
+  def call(payload = %{"content" => _}, options = %{"webhook" => webhook})
+      when is_map(payload) and is_map(options) do
     send_discord(payload, webhook)
   end
 
-  @spec send_discord(map, binary) :: {:ok, binary} | {:error, {atom, any}}
-  defp send_discord(_payload, nil), do: {:error, {:missing_options, nil}}
+  def call(_, _), do: {:error, {:missing_required_params}, nil}
 
+  @spec send_discord(map, binary) :: Notifiex.result()
   defp send_discord(payload, url) do
     json_payload = Poison.encode!(payload)
 

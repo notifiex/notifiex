@@ -4,6 +4,12 @@ defmodule Notifiex.Service.Slack do
   """
 
   @behaviour Notifiex.ServiceBehaviour
+  @type payload :: %{required(:text) => binary, required(:channel) => binary}
+  @type options :: %{
+          required(:token) => binary,
+          optional(:channel_ids) => any,
+          optional(:files) => any
+        }
 
   @doc """
   Sends a message to the specified channel.
@@ -14,11 +20,16 @@ defmodule Notifiex.Service.Slack do
 
   `options` should include the following:
   * `token`: Authentication token. (required)
+  * `channel_ids`: List of channel IDs for file upload (optional)
+  * `files`: List of files to be uploaded (optional)
   """
-  @spec call(map, map) :: {:ok, binary} | {:error, {atom, any}}
-  def call(payload, options) when is_map(payload) and is_map(options) do
+  @spec call(payload(), options()) :: Notifiex.result()
+  def call(payload, options)
+
+  def call(payload = %{"text" => _, "channel" => _}, options = %{"token" => token})
+      when is_map(payload) and is_map(options) do
+    IO.puts("text #{Map.get(payload, :text)}")
     url = "https://slack.com/api/chat.postMessage"
-    token = Map.get(options, :token)
 
     # send message (without file)
     result = send_message(payload, url, token)
@@ -39,7 +50,9 @@ defmodule Notifiex.Service.Slack do
     end
   end
 
-  @spec send_message(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
+  def call(_, _), do: {:error, {:missing_required_params}, nil}
+
+  @spec send_message(map, binary, binary) :: Notifiex.result()
   defp send_message(payload, url, token) do
     json_payload = Poison.encode!(payload)
 
@@ -66,7 +79,7 @@ defmodule Notifiex.Service.Slack do
     end
   end
 
-  @spec send_files(binary, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
+  @spec send_files(binary, binary, binary) :: Notifiex.result()
   defp send_files(files, channels, token) do
     header = [
       {"Authorization", "Bearer " <> token}
