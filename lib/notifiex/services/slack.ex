@@ -21,7 +21,7 @@ defmodule Notifiex.Service.Slack do
     token = Map.get(options, :token)
 
     # send message (without file)
-    send_message(payload, url, token)
+    result = send_message(payload, url, token)
 
     # fetch channels and files
     channels = Map.get(options, :channel_ids)
@@ -34,6 +34,8 @@ defmodule Notifiex.Service.Slack do
           send_files(file, channels, token)
         end
       end
+    else
+      result
     end
   end
 
