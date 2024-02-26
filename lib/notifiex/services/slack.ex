@@ -28,14 +28,14 @@ defmodule Notifiex.Service.Slack do
     files = Map.get(options, :files)
 
     # Send each file through the files.upload API
-    if not is_nil(files) do
+    if is_nil(files) do
+      result
+    else
       for file <- files do
         if String.trim(file) != "" do
           send_files(file, channels, token)
         end
       end
-    else
-      result
     end
   end
 
