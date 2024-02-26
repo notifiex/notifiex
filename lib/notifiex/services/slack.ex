@@ -21,14 +21,16 @@ defmodule Notifiex.Service.Slack do
     token = Map.get(options, :token)
 
     # send message (without file)
-    send_message(payload, url, token)
+    result = send_message(payload, url, token)
 
     # fetch channels and files
     channels = Map.get(options, :channel_ids)
     files = Map.get(options, :files)
 
     # Send each file through the files.upload API
-    if not is_nil(files) do
+    if is_nil(files) do
+      result
+    else
       for file <- files do
         if String.trim(file) != "" do
           send_files(file, channels, token)
@@ -38,8 +40,6 @@ defmodule Notifiex.Service.Slack do
   end
 
   @spec send_message(map, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
-  defp send_message(_payload, nil, nil), do: {:error, {:missing_options, nil}}
-
   defp send_message(payload, url, token) do
     json_payload = Poison.encode!(payload)
 
@@ -67,8 +67,6 @@ defmodule Notifiex.Service.Slack do
   end
 
   @spec send_files(binary, binary, binary) :: {:ok, binary} | {:error, {atom, any}}
-  defp send_files(_files, nil, nil), do: {:error, {:missing_options, nil}}
-
   defp send_files(files, channels, token) do
     header = [
       {"Authorization", "Bearer " <> token}
